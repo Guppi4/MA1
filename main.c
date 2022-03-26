@@ -7,28 +7,40 @@
 #include<stdio.h>
 
 #define SIZE 256
+
+int CommunicationFlag = 0;
+
+void PrintOnWhere(char a[SIZE]){
+    if (CommunicationFlag==0){
+        printf("Sending Client ..%s\n", a);
+    }else{
+        printf("Sending TCP .. %s\n", a);
+    }
+}
+
+
 void getcw(){
     char cwd[256];
-
-
-    if (getcwd(cwd, sizeof(cwd)) == NULL)
+    if (getcwd(cwd, sizeof(cwd)) == NULL){
       perror("getcwd() error");
-    else
-      printf("current working directory is: %s\n", cwd);
+    }
+    else{
+        PrintOnWhere(cwd);
+    }
 }
+
+
 void parseSpace(char* str, char** parsed)//spliting input string 
 {
     int i;
-
     for (i = 0; i < 4; i++) {
         parsed[i] = strsep(&str, " ");
-  
-      
-        
-        if (parsed[i] == NULL)
+        if (parsed[i] == NULL){
             break;
-        if (strlen(parsed[i]) == 0)
+        }
+        if (strlen(parsed[i]) == 0){
             i--;
+        }
     }
 }
 int ownCmdHandler(char* parsed[SIZE],char inputString[SIZE])//Collection of commands
@@ -36,61 +48,56 @@ int ownCmdHandler(char* parsed[SIZE],char inputString[SIZE])//Collection of comm
     int switchOwnArg;
     int NoOfOwnCmds = 6;
     char* ListOfOwnCmds[NoOfOwnCmds];
-    
-  
     ListOfOwnCmds[0] = "EXIT";
     ListOfOwnCmds[1] = "ECHO";
     ListOfOwnCmds[2] = "HELP";
     ListOfOwnCmds[3] = "TCP";
     ListOfOwnCmds[4] = "LOCAL";
     ListOfOwnCmds[5] = "DIR";
-     for ( int i = 0; i < 6; i++) {
+    for ( int i = 0; i < 6; i++) {
         if (strcmp(parsed[0], ListOfOwnCmds[i]) == 0) {
             switchOwnArg = i ;
             break;
         }
-    }
-     
+    } 
     switch (switchOwnArg) {
-    case 0:
-        printf("Bye");
-        exit(0);
-    case 1:
+        case 0:
+            PrintOnWhere("Bye");
+            exit(0);
+        case 1:
             for ( int i = 1; i < 4; i++) {
-            if(parsed[i]!=NULL){
-                printf("%s ",parsed[i]);
+                if(parsed[i]!=NULL){
+                    printf("%s ",parsed[i]);
+                }
             }
-           
-            }
-      return 1;
-    case 2:
+            return 1;
+        case 2:
         
-        return 1;
-    case 3: 
-       
-        return 1;
-     case 4: 
-       
-        return 1;
-     case 5: ; 
-        DIR* dObj;
-       struct dirent* dir;
-     char cwd[256];
-
+            return 1;
+        case 3: 
+            CommunicationFlag = 1;
+            return 1;
+        case 4: 
+            CommunicationFlag = 0;
+            return 1;
+        case 5: ; 
+            DIR* dObj;
+            struct dirent* dir;
+            char cwd[256];
 
     if (getcwd(cwd, sizeof(cwd)) == NULL)
       perror("getcwd() error");
    
      dObj = opendir(cwd);
-      printf("\nList of files and sub directories: \n");
+     PrintOnWhere("\nList of files and directories:\n");
      if (dObj != NULL) {
          while ((dir = readdir(dObj)) != NULL) {
-            printf("%s\n", dir->d_name);
+            PrintOnWhere(dir->d_name);
         }
         closedir(dObj);
         }
-   
         return 1;
+       
      case 6: 
        
         return 1;
@@ -100,24 +107,36 @@ int ownCmdHandler(char* parsed[SIZE],char inputString[SIZE])//Collection of comm
   
     return 0;
 }
+
 void inputcommand(char in[SIZE]) {//input string 
+    //printf("111111111111111111111111111111111111\n");
+    scanf("%[^\n]s",in);
     
-      scanf("%[^\n]s",in);
-}     
-int main()
-{
-    char inputString[SIZE];
-    char * inputspace[SIZE];
-    printf("yes master\n");
-    getcw();
-    inputcommand(inputString);
-    parseSpace(inputString,inputspace);
-    ownCmdHandler(inputspace,inputString);
-  
-      
-       
-       
-   
-    return 0;
 }
 
+
+
+int main()
+{ 
+    
+     char inputString[SIZE];
+    char * inputspace[SIZE];
+    
+   
+    while(1){
+    fflush(stdout);
+    scanf("%[^\n]s",inputString);
+      while ((getchar()) != '\n');
+    printf("%s",inputString);
+   
+    printf("yes master\n");
+    getcw();
+    
+   
+    parseSpace(inputString,inputspace);
+    ownCmdHandler(inputspace,inputString);  
+      
+       
+    }
+    return 0;
+}
