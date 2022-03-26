@@ -80,8 +80,7 @@ int ownCmdHandler(char* parsed[SIZE],char inputString[SIZE])//Collection of comm
 
     if (getcwd(cwd, sizeof(cwd)) == NULL)
       perror("getcwd() error");
-    else
-      printf("current working directory is: %s\n", cwd);
+   
      dObj = opendir(cwd);
       printf("\nList of files and sub directories: \n");
      if (dObj != NULL) {
